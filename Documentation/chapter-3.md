@@ -368,7 +368,7 @@ Here is an example of Redis model linked with a Mysql model :
 ```injectablephp
 <?php
 
-namespace App\Model\TestBundle\Dao;
+namespace App\Model\RedisBundle\Dao;
 
 use Sebk\SmallOrmCore\Dao\AbstractRedisDao;
 
