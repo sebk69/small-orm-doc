@@ -270,11 +270,90 @@ For more complex requests, see [chapter 4 - QueryBuilder](chapter-4.md).
 
 ### Redis specials
 
-Redis is a key/value database.
+Redis is a key/value database and some things are simplify.
+
+Here is an example of DAO :
+```injectablephp
+<?php
+
+namespace App\Model\TestBundle\Dao;
+
+use Sebk\SmallOrmCore\Dao\AbstractRedisDao;
+
+class MyKey extends AbstractRedisDao
+{
+
+    protected function build()
+    {
+        $this->setDbTableName("my:key")
+            ->setModelName("MyKey")
+            ->addField("id", "id")
+            ->addField("label", "label")
+        ;
+    }
+
+}
+```
+
+Note that AbstractRedisDao extends AbtractDao
 
 Then the 'findOneBy' and 'findBy' methods is more simple to use :
 ```injectablephp
 $value = $daoRedis->findOneBy(2); // Load key my:key:2
 $values = $daoRedis->findBy([2, 3, 4]); // Load keys my:key:2, my:key:3 and my:key:4 as array of models
-$value = $daoRedis2->findOneBy(); // Load key my:second-key
+$value2 = $daoRedis2->findOneBy(); // Load key my:second-key
+```
+
+On load from database, the models are loaded with a special field 'key' :
+* $value->getKey() will return 2
+* $value2->getKey() will throw an exception
+
+To persist, the 'key' field must be set to $value. A possible way to simply manage that particularity is to link our 'id' field with 'key' field in model definition :
+```injectablephp
+<?php
+
+namespace App\Model\TestBundle\Model;
+
+use Sebk\SmallOrmCore\Dao\Model;
+
+/**
+ * @method getId()
+ * @method setId($value)
+ * @method getLabel()
+ * @method setLabel($value)
+ */
+class Test extends Model
+{
+    public function beforeSave()
+    {
+        $this->setKey($this->getId());
+    }
+}
+```
+
+Now if we want to create model id 1 :
+```injectablephp
+$model = $daoRedis->newModel();
+$model->setId(1);
+$model->setLabel('This is first test');
+$model->persist();
+```
+
+This will store the following model in json format for key 'my:key:1' :
+
+```json
+{
+  "id": "1",
+  "label": "This is first test"
+}
+```
+
+As persist, the delete method work as same way using 'key' field :
+```injectablephp
+$value->delete(); // delete key 'my:key:2'
+```
+
+Or if the key field is not defined :
+```injectablephp
+$value2->delete(); // delete key 'my:second-key'
 ```
