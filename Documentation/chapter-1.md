@@ -74,4 +74,6 @@ The following types are allowed for now :
 
 If the tryCreateDatabase is true, the database will be created automatically if not exists. It can slow your app, then use it only for dev purpose.
 
-In 'bundles' section, you can define as many bundles you want. Here we have created a TestModel bundle that can be used by 'default' connection (it is possible to define connections on more that one connection). In connection section, is the definition of namespaces of each subfolders of bundle.
+In 'bundles' section, you can define as many bundles you want. Here we have created a TestModel bundle that can be used by 'default' connection (it is possible to define bundles handle more that one connection).
+
+In connection section, is the definition of namespaces of each subfolders of bundle.
