@@ -357,3 +357,41 @@ Or if the key field is not defined :
 ```injectablephp
 $value2->delete(); // delete key 'my:second-key'
 ```
+
+### loadToOne and loadToMany are cross db types
+
+In QueryBuilder and RedisQueryBuilder, you can't join a MySql model with a Redis model for evident reasons.
+
+But you can declare a 'toOne' or a 'toMany' relation between Mysql and Redis model in order to use them with 'loadToOne' and 'loadToMany' methods.
+
+Here is an example of Redis model linked with a Mysql model :
+```injectablephp
+<?php
+
+namespace App\Model\TestBundle\Dao;
+
+use Sebk\SmallOrmCore\Dao\AbstractRedisDao;
+
+class CustomerRefund extends AbstractRedisDao
+{
+
+    protected function build()
+    {
+        $this->setDbTableName("app:customer:refund")
+            ->setModelName("CustomerRefund")
+            ->addField("customerId", "customerId")
+            ->addField("amount", "amount")
+
+            ->addToOne("customer", ["customerId" => "id"], "Customer", "MysqlBundle")
+        ;
+    }
+
+}
+```
+
+Now, we can use loadToOne to load customer and get firstname of customer :
+```injectablephp
+$refund = $daoCustomerRefund->findOneBy(1);
+$refund->loadToOne('customer');
+$firstname = $refund->getCustomer()->getFirstname();
+```
