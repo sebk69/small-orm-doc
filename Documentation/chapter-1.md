@@ -9,17 +9,17 @@
 Go to root folder of your application.
 
 Require Small ORM Core package :
-```
+```bash
 composer require sebk/small-orm-core
 ```
 
 Require the swoft package with composer :
-```
+```bash
 composer require sebk/small-orm-swoft
 ```
 
 To use CRUD generator (this step is optional), you must require sebk/swoft-json-response and sebk/small-orm-forms :
-```
+```bash
 composer require sebk/swoft-json-response
 composer require sebk/small-orm-forms
 ```
@@ -27,7 +27,7 @@ composer require sebk/small-orm-forms
 ### Configuring small-orm-swoft in your application
 
 Here is the code to put in your config/sebk_small_orm.php :
-```
+```injectablephp
 return [
     'bundlesBasePath' => __DIR__ . '/../app/Bundles/',
     'crudBasePath' => __DIR__ . '/../app/Http/Controller/',
@@ -35,7 +35,7 @@ return [
         'default' => [
             'type' => 'swoft-mysql',
             'host' => 'localhost',
-            'database' => 'swoft_db',
+            'database' => 'db',
             'encoding' => 'utf8',
             'user' => 'root',
             'password' => 'dev',

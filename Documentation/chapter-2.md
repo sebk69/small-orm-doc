@@ -11,17 +11,17 @@ This section is for Symfony 5+ applications
 Go to root path of your Symfony application.
 
 Require the core package with composer :
-```
+```bash
 composer require sebk/small-orm-core "1.*"
 ```
 
 Require the bundle package with composer :
-```
+```bash
 composer require sebk/small-orm-bundle "~2.0"
 ```
 
 Register bundle in config/bundles.php :
-```
+```injectablephp
 <?php
 
 return [
@@ -33,7 +33,7 @@ return [
 
 ### Configuring small-orm-bundle in your application
 
-```
+```yaml
 sebk_small_orm:
     connections:
         default:
