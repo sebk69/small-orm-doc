@@ -7,3 +7,4 @@
 ### [Chapter 2](chapter-2.md) : Installation and configuration for Symfony
 ### [Chapter 3](chapter-3.md) : Implementing a table in small-orm model system
 ### [chapter 4](chapter-4.md) : QueryBuilder
+### [chapter 5](chapter-5.md) : RedisQueryBuilder
