@@ -12,6 +12,6 @@
 ### [chapter 7](chapter-7.md) : Validators
 ### [chapter 8](chapter-8.md) : Database layers : an easy database deployment
 ### [chapter 9](chapter-9.md) : Working with types
-### [Chapter 10](chapter-10) : Forms an easy way to check input data and do partial update your models
+### [Chapter 10](chapter-10.md) : Forms an easy way to check input data and do partial update your models
 ### Chapter 11 : (TODO) Useful commands
 ### Chapter 12 : (TODO) Swoft crud generator
