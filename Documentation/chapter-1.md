@@ -27,7 +27,7 @@ composer require sebk/small-orm-forms
 ### Configuring small-orm-swoft in your application
 
 Here is the code to put in your config/sebk_small_orm.php :
-```injectablephp
+```php
 return [
     'bundlesBasePath' => __DIR__ . '/../app/Bundles/',
     'crudBasePath' => __DIR__ . '/../app/Http/Controller/',
