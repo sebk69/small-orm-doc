@@ -17,12 +17,12 @@ By convention, we will put all our queries in your DAO class to keep them in one
 #### Instanciate query
 
 To build a query, just call 'createQueryBuilder' method of DAO :
-```injectablephp
+```php
 $query = $daoCustomer->createQueryBuilder();
 ```
 
 To see corresponding sql (usefull for debugging), you can call 'getSql' method of QueryBuilder :
-```injectablephp
+```php
 echo $query->getSql();
 ```
 
@@ -34,14 +34,14 @@ SELECT DISTINCT `Customer`.`id` AS `Customer_id`, `Customer`.`email` AS `Custome
 #### Get query result
 
 To get result, use 'getResult' method of DAO :
-```injectablephp
+```php
 $allCustomers = $daoCustomer->getResult($query);
 ```
 
 #### Put it in DAO
 
 As we say previously, we want to keep all our requests in DAO. Here is our DAO code :
-```injectablephp
+```php
 <?php
 
 namespace App\Model\TestBundle\Dao;
@@ -84,7 +84,7 @@ class Customer extends AbstractDao
 The where clause allow you to filter your results. It comes with conditions instructions.
 
 For example, we want to get all customers of type id 1 :
-```injectablephp
+```php
 $query->where()
     ->firstCondition($query->getFieldForCondition('idType'), '=', 1);
 ```
@@ -104,7 +104,7 @@ SELECT DISTINCT `Customer`.`id` AS `Customer_id`, `Customer`.`email` AS `Custome
 ```
 
 Now we want to build a 'getCustomerByType' injecting a parameter to generalise the request. To do that, we use binding with the 'setParameter' method :
-```injectablephp
+```php
 /**
  * Get customer by type
  * @param int $idType
@@ -153,7 +153,7 @@ All Mysql operators are implemented :
 Now, we want to get customers with customer types and orders.
 
 To do that, we use join methods on 'toOne' and 'toMany' fields. Here is now our 'getAllCustomers' request :
-```injectablephp
+```php
 /**
  * Get all customers
  * @return \App\Model\TestBundle\Model\Customer[]
@@ -171,7 +171,7 @@ public function getAllCustomers(): array
 ```
 
 This request will load 'type' and 'orders' properties with corresponding models in one request to database :
-```injectablephp
+```php
 $customers = $daoCustomer->getAllCustomers();
 echo $customers[0]->getType()->getLabel();
 foreach ($customers[0]->getOrders() as $order) {
@@ -187,7 +187,7 @@ Here are the possible join methods :
 * 'fullOuterJoin'
 
 You can also use conditions in joins. For example, we want to filter orders by status 'prepared' of customers :
-```injectablephp
+```php
 /**
  * Get all customers with prepared orders
  * @return \App\Model\TestBundle\Model\Customer[]
@@ -211,7 +211,7 @@ public function getCustomersOrdersPrepared(): array
 ### Multiple conditions
 
 Of course you can use more than one condition in 'where' clause of in 'joinCondition' clause :
-```injectablephp
+```php
 $query = $daoCustomer->createQueryBuilder("customer");
 $query->innerJoin("type")->endJoin()
     ->leftJoin("orders")
@@ -238,7 +238,7 @@ Here are possible conditions :
 ### Brackets
 
 To continue in complex requests, you can use brackets on your 'where' clause or 'joinCondition' clause :
-```injectablephp
+```php
 $query = $daoOrder->createQueryBuilder("order");
 $query->where()
     ->firstCondition($query->getFieldForCondition('total'), '>', 100)

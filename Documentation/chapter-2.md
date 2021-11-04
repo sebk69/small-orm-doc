@@ -21,7 +21,7 @@ composer require sebk/small-orm-bundle "~2.0"
 ```
 
 Register bundle in config/bundles.php :
-```injectablephp
+```php
 <?php
 
 return [

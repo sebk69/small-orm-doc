@@ -26,7 +26,7 @@ The goal of this class is to define the bridge between database and model.
 The first step is to define the structure of model and how to fill it with data. To do than, you must define a 'build' method.
 
 Here is an example :
-```injectablephp
+```php
 <?php
 
 namespace App\Model\TestBundle\Dao;
@@ -67,12 +67,12 @@ By convention, the DAO is also, a repository of requests (see [Chapter 4 - Query
 Now, you can get a DAO objet with 'sebk_small_orm_dao' factory service.
 
 For Symfony :
-```injectablephp
+```php
 $daoCustomer = $container->get('sebk_small_orm_dao')->get('TestBundle', 'Customer');
 ```
 
 For Swoft :
-```injectablephp
+```php
 $daoCustomer = bean('sebk_small_orm_dao')->get('TestBundle', 'Customer');
 ```
 
@@ -81,7 +81,7 @@ $daoCustomer = bean('sebk_small_orm_dao')->get('TestBundle', 'Customer');
 The models class define objects that will be return by DAO in result of queries. Often, ORM call them entities.
 
 Here is the minimum definition of model our 'Customer' :
-```injectablephp
+```php
 <?php
 
 namespace App\Model\TestBundle\Model;
@@ -97,19 +97,19 @@ The only required thing is that your model class extends 'Sebk\SmallOrmCore\Dao\
 
 When queried, the DAO will create model with getters and setters corresponding to the definition in 'build' of DAO :
 
-```injectablephp
+```php
 $idType = $customer->getIdType();
 $customer->setFirstName('John');
 ```
 
 You can also create a new empty model from dao :
-```injectablephp
+```php
 $newCustomer = $daoCustomer->newModel();
 ```
 
 In addition, you can add custom methods. For example, we will calculate the amount of spent money by customer :
 
-```injectablephp
+```php
 <?php
 
 namespace App\Model\TestBundle\Model;
@@ -131,22 +131,22 @@ class Customer extends Model
 ```
 
 You can now use this method in all your models :
-```injectablephp
+```php
 $totalCustomer = $customer->getTotalSpent();
 ```
 
 You can also set 'on fly' properties :
-```injectablephp
+```php
 $customer->setMyProp("test");
 ```
 
 And get them later :
-```injectablephp
+```php
 $result = $customer->getMyProp();
 ```
 
 There is some 'special' methods that help in some cases :
-```injectablephp
+```php
 <?php
 
 namespace App\Model\TestBundle\Model;
@@ -192,13 +192,13 @@ These methods are called on action on model :
 ### Interact with database
 
 To save model (insert or update), just call 'perist' method :
-```injectablephp
+```php
 $customer->setName('John');
 $customer->persist();
 ```
 
 Or with DAO object :
-```injectablephp
+```php
 $customer->setName('John');
 $customerDao->persist($customer);
 ```
@@ -206,19 +206,19 @@ $customerDao->persist($customer);
 These two ways do exactly the same.
 
 As same way, you can delete a model :
-```injectablephp
+```php
 $customer->delete();
 ```
 
 To load a model from database, you can use 'findOne' shortcut :
-```injectablephp
+```php
 $customer = $daoCustomer->findOneBy(['id' => 1]);
 ```
 
 This request will build '$customer' model and load it from database with customer id 1.
 
 At this point, we want to read label of customer type.
-```injectablephp
+```php
 $type = $customer->getType();
 ```
 
@@ -226,7 +226,7 @@ As we have no lasy loading, $type is null.
 
 There is two ways to load the dependency :
 * In the same request :
-```injectablephp
+```php
 $customer = $daoCustomer->findOneBy(['id' => 1], [['type']]);
 $type = $customer->getType();
 ```
@@ -234,13 +234,13 @@ $type = $customer->getType();
 Here, the $type will contains the 'CustomerType' model corresponding to customer id 1.
 
 You can get all levels of dependency as you want. Here another example that load customer and count the number of items of he's first order
-```injectablephp
+```php
 $customer = $daoCustomer->findOneBy(['id' => 1], [['orders'], ['orders' => 'items']]);
 $number = count($customer->getOrders()[0]->getItems());
 ```
 
 * With loadToOne and loadToMany methods of model
-```injectablephp
+```php
 // Load customer
 $customer = $daoCustomer->findOneBy(['id' => 1]);
 
@@ -260,7 +260,7 @@ The good way to load dependency depends on your process.
 * The second way is safer for reusable functions because if already loaded, it changes nothing, and if not you are sure to have the dependency loaded for your process
 
 To load many models, use the 'findBy' method :
-```injectablephp
+```php
 $customers = $customerDao->findBy(['idType' => 2]);
 ```
 
@@ -273,7 +273,7 @@ For more complex requests, see [chapter 4 - QueryBuilder](chapter-4.md).
 Redis is a key/value database and some things are simplify.
 
 Here is an example of DAO :
-```injectablephp
+```php
 <?php
 
 namespace App\Model\TestBundle\Dao;
@@ -298,7 +298,7 @@ class MyKey extends AbstractRedisDao
 Note that AbstractRedisDao extends AbtractDao
 
 Then the 'findOneBy' and 'findBy' methods is more simple to use :
-```injectablephp
+```php
 $value = $daoRedis->findOneBy(2); // Load key my:key:2
 $values = $daoRedis->findBy([2, 3, 4]); // Load keys my:key:2, my:key:3 and my:key:4 as array of models
 $value2 = $daoRedis2->findOneBy(); // Load key my:second-key
@@ -309,7 +309,7 @@ On load from database, the models are loaded with a special field 'key' :
 * $value2->getKey() will throw an exception
 
 To persist, the 'key' field must be set to $value. A possible way to simply manage that particularity is to link our 'id' field with 'key' field in model definition :
-```injectablephp
+```php
 <?php
 
 namespace App\Model\TestBundle\Model;
@@ -332,7 +332,7 @@ class Test extends Model
 ```
 
 Now if we want to create model id 1 :
-```injectablephp
+```php
 $model = $daoRedis->newModel();
 $model->setId(1);
 $model->setLabel('This is first test');
@@ -349,12 +349,12 @@ This will store the following model in json format for key 'my:key:1' :
 ```
 
 As persist, the delete method work as same way using 'key' field :
-```injectablephp
+```php
 $value->delete(); // delete key 'my:key:2'
 ```
 
 Or if the key field is not defined :
-```injectablephp
+```php
 $value2->delete(); // delete key 'my:second-key'
 ```
 
@@ -365,7 +365,7 @@ In QueryBuilder and RedisQueryBuilder, you can't join a MySql model with a Redis
 But you can declare a 'toOne' or a 'toMany' relation between Mysql and Redis model in order to use them with 'loadToOne' and 'loadToMany' methods.
 
 Here is an example of Redis model linked with a Mysql model :
-```injectablephp
+```php
 <?php
 
 namespace App\Model\RedisBundle\Dao;
@@ -390,7 +390,7 @@ class CustomerRefund extends AbstractRedisDao
 ```
 
 Now, we can use loadToOne to load customer and get firstname of customer :
-```injectablephp
+```php
 $refund = $daoCustomerRefund->findOneBy(1);
 $refund->loadToOne('customer');
 $firstname = $refund->getCustomer()->getFirstname();
