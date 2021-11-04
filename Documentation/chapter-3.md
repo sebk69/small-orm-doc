@@ -38,15 +38,15 @@ class Customer extends AbstractDao
 
     protected function build()
     {
-        $this->setDbTableName("customer")
-            ->setModelName("Customer")
-            ->addField("id", "id")
-            ->addField("email", "email")
-            ->addField("firstname", "firstname")
-            ->addField("lastname", "lastname")
-            ->addField("id_type", "idType")
-            ->addToOne("type", ["idType" => "id"], "CustomerType")
-            ->addToMany("orders", ["id" => "idCustomer"], "Order")
+        $this->setDbTableName('customer')
+            ->setModelName('Customer')
+            ->addField('id', 'id')
+            ->addField('email', 'email')
+            ->addField('firstname', 'firstname')
+            ->addField('lastname', 'lastname')
+            ->addField('id_type', 'idType')
+            ->addToOne('type', ['idType' => 'id'], 'CustomerType')
+            ->addToMany('orders', ['id' => 'idCustomer'], 'Order')
         ;
     }
 
@@ -137,7 +137,7 @@ $totalCustomer = $customer->getTotalSpent();
 
 You can also set 'on fly' properties :
 ```php
-$customer->setMyProp("test");
+$customer->setMyProp('test');
 ```
 
 And get them later :
@@ -157,27 +157,27 @@ class Customer extends Model
 {
     public function onLoad()
     {
-        echo "loaded";
+        echo 'loaded';
     }
 
     public function beforeSave()
     {
-        echo "prepare persist";
+        echo 'prepare persist';
     }
 
     public function afterSave()
     {
-        echo "Persist done";
+        echo 'Persist done';
     }
 
     public function beforeDelete()
     {
-        echo "Prepare delete";
+        echo 'Prepare delete';
     }
 
     public function afterDelete()
     {
-        echo "Delete done";
+        echo 'Delete done';
     }
 }
 ```
@@ -285,10 +285,10 @@ class MyKey extends AbstractRedisDao
 
     protected function build()
     {
-        $this->setDbTableName("my:key")
-            ->setModelName("MyKey")
-            ->addField("id", "id")
-            ->addField("label", "label")
+        $this->setDbTableName('my:key')
+            ->setModelName('MyKey')
+            ->addField('id', 'id')
+            ->addField('label', 'label')
         ;
     }
 
@@ -377,12 +377,12 @@ class CustomerRefund extends AbstractRedisDao
 
     protected function build()
     {
-        $this->setDbTableName("app:customer:refund")
-            ->setModelName("CustomerRefund")
-            ->addField("customerId", "customerId")
-            ->addField("amount", "amount")
+        $this->setDbTableName('app:customer:refund')
+            ->setModelName('CustomerRefund')
+            ->addField('customerId', 'customerId')
+            ->addField('amount', 'amount')
 
-            ->addToOne("customer", ["customerId" => "id"], "Customer", "MysqlBundle")
+            ->addToOne('customer', ['customerId' => 'id'], 'Customer', 'MysqlBundle')
         ;
     }
 

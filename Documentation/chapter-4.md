@@ -212,18 +212,18 @@ public function getCustomersOrdersPrepared(): array
 
 Of course you can use more than one condition in 'where' clause of in 'joinCondition' clause :
 ```php
-$query = $daoCustomer->createQueryBuilder("customer");
-$query->innerJoin("type")->endJoin()
-    ->leftJoin("orders")
+$query = $daoCustomer->createQueryBuilder('customer');
+$query->innerJoin('type')->endJoin()
+    ->leftJoin('orders')
         ->joinCondition()
-            ->andCondition($query->getFieldForCondition("status", "orders"), "=", "prepared")
-            ->andCondition($query->getFieldForCondition("total", "orders"), ">", 100)
+            ->andCondition($query->getFieldForCondition('status', 'orders'), '=', 'prepared')
+            ->andCondition($query->getFieldForCondition('total', 'orders'), '>', 100)
         ->endJoinCondition()
     ->endJoin()
 ;
 $query->where()
-    ->firstCondition($query->getFieldForCondition("idType"), "=", "1")
-    ->andCondition($query->getFieldForCondition("firstname"), "like", "john%")
+    ->firstCondition($query->getFieldForCondition('idType'), '=', '1')
+    ->andCondition($query->getFieldForCondition('firstname'), 'like', 'john%')
 ;
 ```
 
@@ -239,13 +239,13 @@ Here are possible conditions :
 
 To continue in complex requests, you can use brackets on your 'where' clause or 'joinCondition' clause :
 ```php
-$query = $daoOrder->createQueryBuilder("order");
+$query = $daoOrder->createQueryBuilder('order');
 $query->where()
     ->firstCondition($query->getFieldForCondition('total'), '>', 100)
     ->andCondition($query->getFieldForCondition('total'), '<', 1000)
     ->andBracket()
-        ->firstCondition($query->getFieldForCondition("status"), '=', 'prepared')
-        ->orCondition($query->getFieldForCondition("status"), '=', 'in progress')
+        ->firstCondition($query->getFieldForCondition('status'), '=', 'prepared')
+        ->orCondition($query->getFieldForCondition('status'), '=', 'in progress')
     ->endBracket()
     ->andCondition($query->getFieldForCondition('idTax'), '=', 5)
 ```
