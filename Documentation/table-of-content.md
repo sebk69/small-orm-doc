@@ -10,3 +10,4 @@
 ### [chapter 5](chapter-5.md) : RedisQueryBuilder
 ### [chapter 6](chapter-6.md) : UpdateBuilder and DeleteBuilder
 ### [chapter 7](chapter-7.md) : Validators
+### [chapter 8](chapter-8.md) : Database layers
