@@ -40,7 +40,7 @@ class Customer extends AbstractDao
     {
         $this->setDbTableName('customer')
             ->setModelName('Customer')
-            ->addField('id', 'id')
+            ->addPrimaryKey('id', 'id')
             ->addField('email', 'email')
             ->addField('firstname', 'firstname')
             ->addField('lastname', 'lastname')
