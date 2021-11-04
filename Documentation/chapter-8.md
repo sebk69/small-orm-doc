@@ -24,10 +24,12 @@ Database layers are here to easily manage this situation :
 
 Three possibility :
 * The branch ticket-1253 is installed before ticket-1254
-* The branch ticket-1254 is installed before ticket-1254
+* The branch ticket-1254 is installed before ticket-1253
 * The two branches are installed at the same time
 
 These three possibilities are transparent and the two developers haven't to manage them. Just run the console command at each deployment.
+
+To trace the layers executed on an installation, a table '_small_orm_layers' is created and all executed layers are stored into.
 
 ### Creating a database layer
 
@@ -81,9 +83,9 @@ You can specify here your condition to determine if your layer must be executed 
 ```yaml
 connection: default
 required-parameters:
-  business-unit: "compter-sales"
+  business-unit: "computer-sales"
 ```
 
-The layer will be executed only if container parameter 'business-unit' have 'compter-sales' as value.
+The layer will be executed only if container parameter 'business-unit' have 'computer-sales' as value.
 
 You can have any conditions as you want.
