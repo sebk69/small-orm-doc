@@ -2,7 +2,7 @@
 
 [back to table of content](table-of-content.md)
 
-## Chapter 8 : Database layers
+## Chapter 8 : Database layers : an easy database deployment
 
 ### What are database layers ?
 
