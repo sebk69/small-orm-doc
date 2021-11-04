@@ -67,6 +67,8 @@ $query->setParameter('idType', 5)
 
 ### Deletebuilder
 
+#### Create query
+
 To create a mass delete query, use the 'createDeleteBuilder' method of your DAO :
 ```php
 $query = $daoCustomer=>createDeleteBuidler();
