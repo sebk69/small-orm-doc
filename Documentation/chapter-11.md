@@ -80,7 +80,7 @@ $ bin/swoft sebk:small-orm:layers-execute
 
 This command is a development helper that generate a CRUD for a specified DAO.
 
-It is now implemented only for Swoft (see chapter 12 for details).
+It is now implemented only for Swoft (see [chapter 12](chapter-12.md) for details).
 
 #### Swoft
 
