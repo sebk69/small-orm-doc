@@ -254,4 +254,35 @@ This request will return all orders between 100$ and 1000$, prepared or in proge
 
 Note that the first condition of bracket must be 'firstCondition'.
 
-(TODO sub queries)
+### Sub queries
+
+You can also create sub queries.
+
+The 'getFieldForCondition' method work even it the target query is not the from query.
+
+Let see an example : You want to list customers that have at least an order prepared.
+
+Let start making sub query to list prepared orders :
+
+```php
+$subquery = $daoOrder->createQueryBuilder('order');
+$subquery->where()
+    ->firstCondition($query->getFieldForCondition('status'), '=', 'prepared')
+;
+```
+
+Now we build the customer (main) query :
+
+```php
+$query = $daoCustomer->createQueryBuilder('customer');
+$query->where()
+    ->firstCondition($subquery, 'exists')
+;
+```
+
+And complete the sub query with cross query condition :
+```php
+$subquery->getWhere()
+    ->andCondition($subquery->getFieldForCondition('idCustomer'), '=', $query->getFieldForCondition('id'))
+;
+```
