@@ -253,3 +253,5 @@ $query->where()
 This request will return all orders between 100$ and 1000$, prepared or in progess which tax id is 5.
 
 Note that the first condition of bracket must be 'firstCondition'.
+
+(TODO sub queries)
