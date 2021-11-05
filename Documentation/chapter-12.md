@@ -8,6 +8,8 @@
 
 Sowft package come with a CRUD generator. It is not now available for Symfony bundle.
 
+small-orm-forms and small-orm-auth packages are required.
+
 The command will generate a new controller with these routes :
 * GET 'baseRoute/model/{id}' : return the model with id
 * POST 'baseRoute/model' : create a new model and persist
