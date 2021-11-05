@@ -1,12 +1,8 @@
 # small-orm-doc
 
-_**(small-orm-doc is in a draft version for now)**_
-
 small-orm-doc is the documentation for small-orm project
 
-You can read description of small-orm project bellow, or direct access :
-* [Documentation](Documentation/table-of-content.md)
-* [Tutorials](Tutorials/table-of-content.md)
+You can read description of small-orm project bellow, or direct access [Documentation](Documentation/table-of-content.md)
 
 ## What is small-orm ?
 
