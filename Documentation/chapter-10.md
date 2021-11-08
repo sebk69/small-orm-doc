@@ -45,15 +45,17 @@ Just define all fields of your form :
 * First parameter is the field name, used by your main code to get or set fields attributes
 * Second parameter is the field label, 'human' meaning of the field, used to generate error messages
 * The third parameter is the value of the field
-* The fourth parameter is the type of the string, used to check format of teh field (independently of the php type. ex : a '1' string value in a int type will generate a successful validation)
+* The fourth parameter is the type of the field, used to check format of the field (independently of the php type. ex : a '1' string value in a int type will generate a successful validation)
 * The fifth parameter tell form if the field is mandatory or not, used to check the field is empty if the field is mandatory
 
-Here are the possible types :
-* StringType::TYPE_STRING
-* BoolType::TYPE_BOOL
-* IntType::TYPE_INT
-* FloatType::TYPE_FLOAT
-* DateTimeType::TYPE_DATE_TIME
+Here are the possible types classes :
+* StringType
+* BoolType
+* IntType
+* FloatType
+* DateTimeType
+* TimestampType
+* PhpFilterTtype
 
 To use it, just create object and call 'validate' method :
 ```php
