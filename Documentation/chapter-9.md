@@ -27,19 +27,19 @@ class Customer extends AbstractDao
 
     protected function build()
     {
-        $this->setDbTableName("customer")
-            ->setModelName("Customer")
-            ->addPrimaryKey("id", "id")
-            ->addField("email", "email", null, Field::TYPE_STRING)
-            ->addField("firstname", "firstname")
-            ->addField("lastname", "lastname")
-            ->addField("id_type", "idType", null, Field::TYPE_INT)
-            ->addField("profit", "profit", 0, Field::TYPE_FLOAT)
-            ->addField("validated", "validated", false, Field::TYPE_BOOLEAN, ['off', 'on'])
-            ->addField("created_at", "createdAt", null, Field::TYPE_DATETIME, "d/m/Y h:i:s")
-            ->addField("last_visit_time", "lastVisitTime", null, Field::TYPE_TIMESTAMP, "d/m/Y h:i:s")
-            ->addToOne("type", ["idType" => "id"], "CustomerType")
-            ->addToMany("orders", ["id" => "idCustomer"], "Order")
+        $this->setDbTableName('customer')
+            ->setModelName('Customer')
+            ->addPrimaryKey('id', 'id')
+            ->addField('email', 'email', null, Field::TYPE_STRING)
+            ->addField('firstname', 'firstname')
+            ->addField('lastname', 'lastname')
+            ->addField('id_type', 'idType', null, Field::TYPE_INT)
+            ->addField('profit', 'profit', 0, Field::TYPE_FLOAT)
+            ->addField('validated', 'validated', false, Field::TYPE_BOOLEAN, ['off', 'on'])
+            ->addField('created_at', 'createdAt', null, Field::TYPE_DATETIME, 'd/m/Y h:i:s')
+            ->addField('last_visit_time', 'lastVisitTime', null, Field::TYPE_TIMESTAMP, 'd/m/Y h:i:s')
+            ->addToOne('type', ['idType' => 'id'], 'CustomerType')
+            ->addToMany('orders', ['id' => 'idCustomer'], 'Order')
         ;
     }
 
