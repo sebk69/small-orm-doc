@@ -60,4 +60,4 @@ Here are type explanations :
 * The Field::TYPE_TIMESTAMP have the same behaviour as Field::TYPE_DATETIME, except that the database format will be INT unix timestamp. Useful for legacy database tables for example. 
 * The Field::TYPE_PHP_FILTER : is exactly same as Field::TYPE_STRING but when imported to forms, allow you to check format as in 'filter_var' php function. The format must be one of the filter of 'filter_var' (see [https://www.php.net/manual/en/filter.filters.validate.php](https://www.php.net/manual/en/filter.filters.validate.php))
 
-In addition of these behaviours, the type have a very important place in small-orm-form package (see [chapter 10](chapter-10.md)).
+In addition of these behaviours, the type have a very important place in small-orm-form package (see [chapter 10](chapter-11.md)).

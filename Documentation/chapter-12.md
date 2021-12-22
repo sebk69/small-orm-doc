@@ -2,221 +2,96 @@
 
 [back to table of content](table-of-content.md)
 
-## Chapter 12 : Swoft CRUD generator
+## Chapter 11 : Useful commands
 
-### Command
+### Creating DAO and models from database
 
-Sowft package come with a CRUD generator. It is not now available for Symfony bundle.
+First useful command : helper to create DAO and models from database.
 
-small-orm-forms and small-orm-auth packages are required.
-
-The command will generate a new controller with these routes :
-* GET 'baseRoute/model/{id}' : return the model with id
-* POST 'baseRoute/model' : create a new model and persist
-* POST 'baseRoute/model/{id}' : update the model with id
-* DELETE 'baseRoute/model/{id}' : delete model with id
+#### Symfony
 
 ```bash
-$ bin/swoft sebk:small-orm:generate:crud --bundle TestBundle --model Customer --template authToken --base-route person
+$ bin/console sebk:small-orm:add-table
+Connection [default] ?
+Bundle [TestBundle] ?
+Database table [all] ? customer
 ```
 
-### parameters
+Just answer these three questions. By default, the bundle is the first configured bundle and if you don't specify a table, all database will be imported.
 
-* bundle : the bundle of model for which the CRUD will be generated
-* model : the model for which the CRUD will be generated
-* template : optional, the template which will be used to generate CRUD
-  * default : simple CRUD with no authentication
-  * authToken : generate a CRUD for use with small-swoft-auth authentication
-* base-route : optional, a prefix for route
+#### Swoft
 
-### Example
-
-For example we want a group of controllers concerning persons, and we want to generate a customer controller.
-
-Just type this command :
 ```bash
-$ bin/swoft sebk:small-orm:generate:crud --bundle TestBundle --model Customer --template authToken --base-route person
+$ bin/swoft sebk:small-orm:add-table --connection default --bundle TestBundle --table customer
 ```
 
-The generated controller will be placed in specified 'crudBasePath' config and will be named '[model name]Controller'.
+Same as symfony bundle but the parameters are in command.
 
-Here is the generated code for our customer :
-```php
-<?php
-namespace App\Http\Controller;
+#### Result
 
-use App\Model\TestBundle\Model\Customer;
+This command will generate a DAO in the 'Dao' folder and an empty model in 'Model' folder  of the specified bundle by reverse engineering the db table. It's work only on MySql database for now.
 
-use Sebk\SmallSwoftAuth\Controller\TokenSecuredController;
+The build method of DAO will be filled from database but defaults values and types are not managed.
 
-use Sebk\SmallOrmCore\Dao\DaoEmptyException;
-use Sebk\SmallOrmForms\Form\FormModel;
-use Sebk\SmallOrmSwoft\Traits\Injection\DaoFactory;
-use Sebk\SwoftVoter\VoterManager\VoterInterface;
+### Add @method comments in model
 
-use Swoft\Http\Message\Request;
-use Swoft\Http\Server\Annotation\Mapping\Controller;
-use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
-use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
-use Swoft\Http\Server\Annotation\Mapping\Middleware;
-use Swoft\Http\Server\Annotation\Mapping\Middlewares;
+Your models don't have any method : magic calls are used to manage getters and setters. So the IDE don't know your fields getters and setters.
 
-use Swoft\Auth\Middleware\AuthMiddleware;
+It's a good idea to use @method to your class but it is a long work. This command do the job for you.
 
-use Swoole\Http\Status;
+#### Symfony
 
-/**
- * @Controller("person")
- * @Middlewares ({AuthMiddleware::class})
- * @Middleware (AuthMiddleware::class)
- */
-class CustomerController extends TokenSecuredController
-{
-    use DaoFactory;
-
-    /**
-     * Create form for Customer
-     * @return FormModel
-     * @throws \Sebk\SmallOrmForms\Form\FieldException
-     * @throws \Sebk\SmallOrmForms\Type\TypeNotFoundException
-     */
-    protected function createForm(): FormModel
-    {
-        return (new FormModel())
-            ->buildFromDao($this->daoFactory->get('TestBundle', 'Customer'))
-        ;
-    }
-
-    /**
-     * @RequestMapping ("{id}", method={"GET"})
-     * @param int $id
-     * @return \Swoft\Http\Message\Response
-     */
-    public function getCustomer(int $id)
-    {
-        // Check user rights
-        $this->denyAccessUnlessGranted(VoterInterface::ATTRIBUTE_READ, $this);
-
-        // Load model
-        try {
-            /** @var Customer $model */
-            $model = $this->daoFactory->get('TestBundle', 'Customer')->findOneBy(['id' => $id]);
-        } catch (DaoEmptyException $e) {
-            // Not found
-            return JsonResponse('')
-                ->withStatus(Status::NOT_FOUND)
-            ;
-        }
-
-        return JsonResponse($model);
-    }
-
-    /**
-     * @RequestMapping ("", method={"POST"})
-     * @param Request $request
-     * @return \Swoft\Http\Message\Response
-     * @throws \Exception
-     */
-    public function createCustomer(Request $request)
-    {
-        // Check user rights
-        $this->denyAccessUnlessGranted(VoterInterface::ATTRIBUTE_WRITE, $this);
-
-        // Form validation
-        $form = $this->createForm()
-            ->fillFromArray($request->getParsedBody());
-        $messages = $form->validate();
-        if (count($messages) > 0) {
-            // Validation failed
-            return JsonResponse($messages)
-                ->withStatus(Status::BAD_REQUEST);
-        }
-
-        // Persist
-        $model = $form->fillModel()->persist();
-
-        return JsonResponse($model);
-    }
-
-    /**
-     * @RequestMapping ("{id}", method={"POST"})
-     * @param int $id
-     * @param Request $request
-     * @return \Swoft\Http\Message\Response
-     * @throws \Sebk\SmallOrmForms\Form\FieldException
-     * @throws \Sebk\SmallOrmForms\Form\FieldNotFoundException
-     * @throws \Sebk\SmallOrmForms\Type\TypeNotFoundException
-     */
-    public function patchCustomer(int $id, Request $request)
-    {
-        // Check user rights
-        $this->denyAccessUnlessGranted(VoterInterface::ATTRIBUTE_UPDATE, $this);
-
-        // Load model
-        try {
-            /** @var Customer $model */
-            $model = $this->daoFactory->get('TestBundle', 'Customer')->findOneBy(['id' => $id]);
-        } catch (DaoEmptyException $e) {
-            // Not found
-            return JsonResponse('')
-                ->withStatus(Status::NOT_FOUND)
-            ;
-        }
-
-        // Init data
-        $data = $request->getParsedBody();
-        if (isset($data['id'])) {
-            unset($data['id']);
-        }
-
-        // Form validation
-        $form = $this->createForm()
-            ->fillFromModel($model)
-            ->fillFromArray($data)
-        ;
-        $messages = $form->validate();
-        $model = $form->fillModel();
-
-        if (count($messages) > 0) {
-            // Validation failed
-            return JsonResponse($messages)
-                ->withStatus(Status::BAD_REQUEST)
-            ;
-        }
-
-        // Persist
-        $model->persist();
-
-        return JsonResponse($model);
-    }
-
-    /**
-     * @RequestMapping ("{id}", method={"DELETE"})
-     * @param int $id
-     * @return \Swoft\Http\Message\Response
-     */
-    public function deleteCustomer(int $id)
-    {
-        // Check user rights
-        $this->denyAccessUnlessGranted(VoterInterface::ATTRIBUTE_DELETE, $this);
-
-        // Load model
-        try {
-            /** @var Customer $model */
-            $model = $this->daoFactory->get('TestBundle', 'Customer')->findOneBy(['id' => $id]);
-        } catch (DaoEmptyException $e) {
-            // Not found
-            return JsonResponse('')
-                ->withStatus(Status::NOT_FOUND)
-            ;
-        }
-
-        // Persist
-        $model->delete();
-
-        return JsonResponse("");
-    }
-}
+```bash
+$ bin/console sebk:small-orm:add-methods-bloc-comment
+Connection [default] ?
+Bundle [TestBundle] ?
+Dao [all] ?
 ```
 
-You can now complete the code with your application specificities.
+As for add-table, you'll have some questions to answer. You can specify DAO (faster) or not (easier) depends what you prefer.
+
+#### Swoft
+
+```bash
+$ bin/swoft sebk:small-orm:generate:model-autocompletion --connection default --bundle TestBundle --dao Customer
+```
+
+Same as symfony bundle but the parameters are in command.
+
+### Execute layers
+
+We saw this command in chapter 8 : it will execute layers in current installation of your application.
+
+No parameters are require : all necessary layers of all bundles will be executed.
+
+#### Symfony
+
+```bash
+$ bin/console sebk:small-orm:layers-execute
+```
+
+#### Swoft
+
+```bash
+$ bin/swoft sebk:small-orm:layers-execute
+```
+
+### Generate CRUD
+
+This command is a development helper that generate a CRUD for a specified DAO.
+
+It is now implemented only for Swoft (see [chapter 12](chapter-13.md) for details).
+
+#### Swoft
+
+```bash
+$ bin/swoft sebk:small-orm:generate:crud --bundle TestBundle --model Customer --template AuthToken --base-route person
+```
+
+### [legacy] Update DAO
+
+This command has been developed before type management in small-orm DAO.
+
+It's still working but override your build customizations in DAO then if you have typed of added defaults value, this customization will be lost.
+
+So, use it only if you don't use field typing in small-orm.

@@ -52,6 +52,17 @@ You can take it via :
 * composer : https://packagist.org/packages/sebk/small-orm-bundle
 * github : https://github.com/sebk69/SebkSmallOrmBundle
 
+### small-orm-swoole
+
+This is a swoole connector for small-orm.
+
+You can take it via :
+* composer : https://packagist.org/packages/sebk/small-orm-swoole
+* github : https://github.com/sebk69/small-orm-swoole
+
+A symfony sandbox is available
+* github : https://github.com/sebk69/small-orm-swoole-sandbox
+
 ### small-orm-swoft
 
 This is a Swoft package for small-orm.
