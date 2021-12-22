@@ -69,8 +69,9 @@ You must have at least one 'default' connection.
 
 The following types are allowed for now :
 * swoft-mysql : MySql connector for swoft (using default async pool of Swoft)
-* swoft-redis : Redis connector for swoft (using default async pool of Swoft)
-* mysql : traditionnal mysql connector. Avoid to use it in Swoft applications, because it don't support async programming and connection can fail if not used for a moment.
+* swoole-mysql : MySql connector using native Swoole implementation
+* swoft-redis : Redis connector for Swoft (using default async pool of Swoft)
+* mysql : traditional mysql connector. Avoid to use it in Swoft applications, because it don't support async programming and connection can fail if not used for a moment.
 
 If the tryCreateDatabase is true, the database will be created automatically if not exists. It can slow your app, then use it only for dev purpose.
 

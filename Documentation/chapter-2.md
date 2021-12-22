@@ -60,4 +60,4 @@ A bundle must have following subfolders/namespaces part :
 
 You must have at least one 'default' connection.
 
-For now, only mysql type is implented. This is planned to implement a Redis and MongoDb connectors in the future.
+For now, only mysql and swoole-mysql types are implemented. This is planned to implement a Redis and MongoDb connectors in the future.
