@@ -11,21 +11,14 @@ First useful command : helper to create DAO and models from database.
 #### Symfony
 
 ```bash
-$ bin/console sebk:small-orm:add-table
-Connection [default] ?
-Bundle [TestBundle] ?
-Database table [all] ? customer
+$ bin/console sebk:small-orm:generate:dao --connection default --bundle TestBundle --table customer
 ```
-
-Just answer these three questions. By default, the bundle is the first configured bundle and if you don't specify a table, all database will be imported.
 
 #### Swoft
 
 ```bash
 $ bin/swoft sebk:small-orm:add-table --connection default --bundle TestBundle --table customer
 ```
-
-Same as symfony bundle but the parameters are in command.
 
 #### Result
 
@@ -42,13 +35,10 @@ It's a good idea to use @method to your class but it is a long work. This comman
 #### Symfony
 
 ```bash
-$ bin/console sebk:small-orm:add-methods-bloc-comment
-Connection [default] ?
-Bundle [TestBundle] ?
-Dao [all] ?
+$ bin/console sebk:small-orm:generate:model-autocompletion --connection default --bundle TestBundle --dao Customer
 ```
 
-As for add-table, you'll have some questions to answer. You can specify DAO (faster) or not (easier) depends what you prefer.
+You can specify DAO (faster) or not (easier) depends what you prefer. In last case, all models will be updated.
 
 #### Swoft
 
@@ -87,11 +77,3 @@ It is now implemented only for Swoft (see [chapter 12](chapter-13.md) for detail
 ```bash
 $ bin/swoft sebk:small-orm:generate:crud --bundle TestBundle --model Customer --template AuthToken --base-route person
 ```
-
-### [legacy] Update DAO
-
-This command has been developed before type management in small-orm DAO.
-
-It's still working but override your build customizations in DAO then if you have typed of added defaults value, this customization will be lost.
-
-So, use it only if you don't use field typing in small-orm.

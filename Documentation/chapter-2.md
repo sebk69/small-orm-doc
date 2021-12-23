@@ -2,62 +2,80 @@
 
 [back to table of content](table-of-content.md)
 
-## Chapter 2 : Installation and configuration for Symfony
+## Chapter 2 : Installation and configuration for Swoft
 
-This section is for Symfony 5+ applications
+### Install small-orm on existing Swoft application
 
-### Install small-orm on existing Symfony application
+Go to root folder of your application.
 
-Go to root path of your Symfony application.
-
-Require the core package with composer :
+Require Small ORM Core package :
 ```bash
-composer require sebk/small-orm-core "1.*"
+composer require sebk/small-orm-core
 ```
 
-Require the bundle package with composer :
+Require the swoft package with composer :
 ```bash
-composer require sebk/small-orm-bundle "~2.0"
+composer require sebk/small-orm-swoft
 ```
 
-Register bundle in config/bundles.php :
+To use CRUD generator (this step is optional), you must require sebk/swoft-json-response and sebk/small-orm-forms :
+```bash
+composer require sebk/swoft-json-response
+composer require sebk/small-orm-forms
+```
+
+### Configuring small-orm-swoft in your application
+
+Here is the code to put in your config/sebk_small_orm.php :
 ```php
-<?php
-
 return [
-    ...
-    Sebk\SmallOrmBundle\SebkSmallOrmBundle::class => ['all' => true],
-    ...
+    'bundlesBasePath' => __DIR__ . '/../app/Bundles/',
+    'crudBasePath' => __DIR__ . '/../app/Http/Controller/',
+    'connections' => [
+        'default' => [
+            'type' => 'swoft-mysql',
+            'host' => 'localhost',
+            'database' => 'db',
+            'encoding' => 'utf8',
+            'user' => 'root',
+            'password' => 'dev',
+            'tryCreateDatabase' => false,
+        ],
+    ],
+    'bundles' => [
+        'TestModel' => [
+            'connections' => [
+                'default' => [
+                    'dao_namespace' => 'App\Bundles\TestModel\Dao',
+                    'model_namespace' => 'App\Bundles\TestModel\Model',
+                    'validator_namespace' => 'App\Bundles\TestModel\Validator',
+                ],
+            ],
+        ],
+    ],
 ];
 ```
 
-### Configuring small-orm-bundle in your application
-
-```yaml
-sebk_small_orm:
-    connections:
-        default:
-            type: mysql
-            host: %db_host%
-            database: %database_name%
-            encoding: utf8
-            user:     %db_user%
-            password: %db_password%
-
-    bundles:
-        AppAcmeBundle:
-            connections:
-                default:
-                    dao_namespace: App\AcmeBundle\Dao
-                    model_namespace: App\AcmeBundle\Model
-                    validator_namespace: App\AcmeBundle\Validator
-```
+The 'bundleBasePath' is the root path of your bundles. Each bundle is a subfolder in this path.
 
 A bundle must have following subfolders/namespaces part :
 * _**Dao**_ : This folder contains all your DAO classes (used to access database)
 * _**Model**_ : This folder contains all your models classes (equivalent of entities)
 * _**Validator**_ : This folder contains all your validators classes (classes used to validate integrity of your models before persist)
 
+The 'crudBasePath' is your controllers folder. Automatic crud generation will create controllers here.
+
 You must have at least one 'default' connection.
 
-For now, 'mysql', 'swoole-mysql' and 'swoole-redis' types are implemented. This is planned to implement a MongoDb connectors in the future.
+The following types are allowed for now :
+* swoft-mysql : MySql connector for swoft (using default async pool of Swoft)
+* swoole-mysql : MySql connector using native Swoole implementation
+* swoft-redis : Redis connector for Swoft (using default async pool of Swoft)
+* swoole-redis : Redis connector using native Swoole implementation
+* mysql : traditional mysql connector. Avoid to use it in Swoft applications, because it don't support async programming and connection can fail if not used for a moment.
+
+If the tryCreateDatabase is true, the database will be created automatically if not exists. It can slow your app, then use it only for dev purpose.
+
+In 'bundles' section, you can define as many bundles you want. Here we have created a TestModel bundle that can be used by 'default' connection (it is possible to define bundles handle more that one connection).
+
+In connection section, is the definition of namespaces of each subfolders of bundle.
