@@ -6,15 +6,15 @@ You can read description of small-orm project bellow, or direct access [Document
 
 ## What is small-orm ?
 
-As small-orm is an ecosystem of packages serving a simple but efficient ORM for php developpers.
+As small-orm is an ecosystem of packages serving a simple but efficient ORM for php developers.
 
 It started from considering that lazy loading is not a good practice in terms of performance.
 
-At each sub-object reached with lazy loading, a request is done, including network latence and time for database engine to build request.
+At each sub-object reached with lazy loading, a request is done, including network latency and time for database engine to build request.
 
 small-orm allow you to load a group of objects in one time with joins, which is a heavy gain of performance for complex databases.
 
-The around packages are oriented to api and microservice.
+The around packages are oriented to api and microservice applications.
 
 ## Which databases engines supported ?
 
