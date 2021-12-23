@@ -4,7 +4,9 @@
 
 ## Prelude
 
-small-orm was originally developed for Symphony and some Symfony terms like 'bundles' come form that reason.
+small-orm was originally developed for Symphony in api oriented apps. The focus of developments is now for microservices oriented applications.
+
+Some Symfony terms like 'bundles' come form that reason.
 
 In small-orm vocabulary, a bundle is a set of DAO/Model with some isolations (but your can add relations between bundles).
 
