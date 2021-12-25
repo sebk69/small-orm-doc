@@ -2,78 +2,170 @@
 
 [back to table of content](table-of-content.md)
 
-## Chapter 11 : Useful commands
+## Chapter 12 : Forms an easy way to check input data and do partial update your your models
 
-### Creating DAO and models from database
+### Introduction
 
-First useful command : helper to create DAO and models from database.
+small-orm-form is a set of classes to create data validation form.
 
-#### Symfony
+You can use it to create simple forms to check input data from scratch, like login api.
 
+It is also a powerful tool to create form automatically from a DAO and help you to do partial update of models.
+
+### Installation
+
+Require the package with composer:
 ```bash
-$ bin/console sebk:small-orm:generate:dao --connection default --bundle TestBundle --table customer
+composer require sebk/small-orm-forms
 ```
 
-#### Swoft
+### Create simple form
 
-```bash
-$ bin/swoft sebk:small-orm:add-table --connection default --bundle TestBundle --table customer
+The base of the form system is 'AbstractForm' abstract class. It's allowing you to easily create form classes to validate input data in api call.
+
+Here is a simple example of login form class :
+```php
+<?php
+
+use Sebk\SmallOrmForms\Form\AbstractForm;
+use Sebk\SmallOrmForms\Form\Field;
+use Sebk\SmallOrmForms\Type\StringType;
+
+class LoginForm extends AbstractForm
+{
+    public function __construct(array $values)
+    {
+        $this->addField('account', 'User account', $values['account'] ?? null, StringType::TYPE_STRING, Field::MANDATORY);
+        $this->addField('password', 'User password', $values['password'] ?? null, StringType::TYPE_STRING, Field::MANDATORY);
+    }
+}
 ```
 
-#### Result
+Just define all fields of your form :
+* First parameter is the field name, used by your main code to get or set fields attributes
+* Second parameter is the field label, 'human' meaning of the field, used to generate error messages
+* The third parameter is the value of the field
+* The fourth parameter is the type of the field, used to check format of the field (independently of the php type. ex : a '1' string value in a int type will generate a successful validation)
+* The fifth parameter tell form if the field is mandatory or not, used to check the field is empty if the field is mandatory
 
-This command will generate a DAO in the 'Dao' folder and an empty model in 'Model' folder  of the specified bundle by reverse engineering the db table. It's work only on MySql database for now.
+Here are the possible types classes :
+* StringType
+* BoolType
+* IntType
+* FloatType
+* DateTimeType
+* TimestampType
+* PhpFilterTtype
 
-The build method of DAO will be filled from database but defaults values and types are not managed.
+To use it, just create object and call 'validate' method :
+```php
+$form = new LoginForm($this->loginForm, $data);
+$messages = $form->validate();
+if (count($messages) > 0) {
+    foreach ($messages as $message) {
+        echo $message->get();
+    }
+    return;
+}
 
-### Add @method comments in model
-
-Your models don't have any method : magic calls are used to manage getters and setters. So the IDE don't know your fields getters and setters.
-
-It's a good idea to use @method to your class but it is a long work. This command do the job for you.
-
-#### Symfony
-
-```bash
-$ bin/console sebk:small-orm:generate:model-autocompletion --connection default --bundle TestBundle --dao Customer
+echo 'Success !';
 ```
 
-You can specify DAO (faster) or not (easier) depends what you prefer. In last case, all models will be updated.
+### Use FormModel
 
-#### Swoft
+To create model validation forms, you can just inject DAO object in a FormModel and set mandatory fields :
+```php
+use Sebk\SmallOrmForms\Form\FormModel;
 
-```bash
-$ bin/swoft sebk:small-orm:generate:model-autocompletion --connection default --bundle TestBundle --dao Customer
+$form = (new FormModel())
+    ->buildFromDao(bean('sebk_small_orm_dao')->get('TestBundle', 'Customer'))
+    ->setFieldMandatory('firstname')
+    ->setFieldMandatory('lastname')
+;
 ```
 
-Same as symfony bundle but the parameters are in command.
+And then inject data for validation :
+```php
+// Fill form with body of request
+$form->fillFromArray($request->getParsedBody());
 
-### Execute layers
-
-We saw this command in chapter 8 : it will execute layers in current installation of your application.
-
-No parameters are require : all necessary layers of all bundles will be executed.
-
-#### Symfony
-
-```bash
-$ bin/console sebk:small-orm:layers-execute
+// Get messages from validation
+$messages = $form->validate();
+if (count($messages) > 0) {
+    // Validation failed
+    return JsonResponse($messages)
+        ->withStatus(Status::BAD_REQUEST)
+    ;
+}
 ```
 
-#### Swoft
+Note that validation don't only generate technial checks on data : it call the model validator and merge form messages with validator messages.
 
-```bash
-$ bin/swoft sebk:small-orm:layers-execute
+You can also get a new model from form in order to persist your data :
+```php
+$model = $form->fillModel()->persist();
+
+// return updated model
+return JsonResponse($model);
 ```
 
-### Generate CRUD
+As we have created and persist new model, we can inject a model to update it :
+```php
+// Get model to update
+$model = bean('sebk_small_orm_dao')
+    ->get('TestBundle', 'Customer')
+    ->findOneBy($request->get('id'))
+;
 
-This command is a development helper that generate a CRUD for a specified DAO.
+// Get data from body
+$data = $request->getParsedBody();
 
-It is now implemented only for Swoft (see [chapter 12](chapter-13.md) for details).
+// Create form and fill...
+$form = (new FormModel())
+    ->buildFromDao(bean('sebk_small_orm_dao')->get('TestBundle', 'Customer'))
+    ->setFieldMandatory('firstname')
+    ->setFieldMandatory('lastname')
+    // with model
+    ->fillFromModel($model)
+    // and overwrite with body data
+    ->fillFromArray($data)
+;
 
-#### Swoft
+// Get messages from validation
+$messages = $form->validate();
+if (count($messages) > 0) {
+    // Validation failed
+    return JsonResponse($messages)
+        ->withStatus(Status::BAD_REQUEST)
+    ;
+}
 
-```bash
-$ bin/swoft sebk:small-orm:generate:crud --bundle TestBundle --model Customer --template AuthToken --base-route person
+// persist
+$model = $form->fillModel()->persist();
+
+// return updated model
+return JsonResponse($model);
+```
+
+The last example will work with any partial update. For example the request can contains only :
+```json
+{
+  "lastname":"skywalker"
+}
+```
+
+Then this code will only update the lastname.
+
+If your body is :
+```json
+{
+  "lastname":""
+}
+```
+
+The the code will respond a 400 http code with the body :
+```json
+[
+  "The field lastname is mandatory"
+]
 ```

@@ -2,7 +2,7 @@
 
 [back to table of content](table-of-content.md)
 
-## Chapter 13 : Working with transactions
+## Chapter 10 : Working with transactions
 
 ### PersistThread class
 

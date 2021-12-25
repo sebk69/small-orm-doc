@@ -2,7 +2,7 @@
 
 [back to table of content](table-of-content.md)
 
-## Chapter 2 : Installation and configuration for Symfony
+## Chapter 1 : Installation and configuration for Symfony
 
 This section is for Symfony 5+ applications
 

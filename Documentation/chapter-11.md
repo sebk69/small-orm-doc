@@ -2,170 +2,64 @@
 
 [back to table of content](table-of-content.md)
 
-## Chapter 10 : Forms an easy way to check input data and do partial update your your models
+## Chapter 11 : Backup model state
 
-### Introduction
+Usefull functionality is backup. It save state of model that you can compare later with current value.
 
-small-orm-form is a set of classes to create data validation form.
+For example, you can see if name of customer has changed :
 
-You can use it to create simple forms to check input data from scratch, like login api.
-
-It is also a powerful tool to create form automatically from a DAO and help you to do partial update of models.
-
-### Installation
-
-Require the package with composer:
-```bash
-composer require sebk/small-orm-forms
-```
-
-### Create simple form
-
-The base of the form system is 'AbstractForm' abstract class. It's allowing you to easily create form classes to validate input data in api call.
-
-Here is a simple example of login form class :
 ```php
-<?php
+// Backup model state
+$customer->backup();
 
-use Sebk\SmallOrmForms\Form\AbstractForm;
-use Sebk\SmallOrmForms\Form\Field;
-use Sebk\SmallOrmForms\Type\StringType;
+// Change model
+$customer->setName('Zebulon');
 
-class LoginForm extends AbstractForm
-{
-    public function __construct(array $values)
-    {
-        $this->addField('account', 'User account', $values['account'] ?? null, StringType::TYPE_STRING, Field::MANDATORY);
-        $this->addField('password', 'User password', $values['password'] ?? null, StringType::TYPE_STRING, Field::MANDATORY);
-    }
+// Test if modified
+if ($customer->getName() != $customer->getBackup()->name) {
+    echo 'Customer name has changed !';
 }
 ```
 
-Just define all fields of your form :
-* First parameter is the field name, used by your main code to get or set fields attributes
-* Second parameter is the field label, 'human' meaning of the field, used to generate error messages
-* The third parameter is the value of the field
-* The fourth parameter is the type of the field, used to check format of the field (independently of the php type. ex : a '1' string value in a int type will generate a successful validation)
-* The fifth parameter tell form if the field is mandatory or not, used to check the field is empty if the field is mandatory
-
-Here are the possible types classes :
-* StringType
-* BoolType
-* IntType
-* FloatType
-* DateTimeType
-* TimestampType
-* PhpFilterTtype
-
-To use it, just create object and call 'validate' method :
+By default, this method create only backup on the model and not on dependencies. To backup also dependencies you can specify true as parameter :
 ```php
-$form = new LoginForm($this->loginForm, $data);
-$messages = $form->validate();
-if (count($messages) > 0) {
-    foreach ($messages as $message) {
-        echo $message->get();
-    }
-    return;
+// Backup model deeply
+$user->backup(true);
+
+// Change group name
+$user->getGroup()->setName("New group name");
+
+// Test if modified
+if($user->getGroup()->getName() != $user->getGroup()->getBackup()->name) {
+    echo "The group name has been updated";
 }
 
-echo 'Success !';
-```
-
-### Use FormModel
-
-To create model validation forms, you can just inject DAO object in a FormModel and set mandatory fields :
-```php
-use Sebk\SmallOrmForms\Form\FormModel;
-
-$form = (new FormModel())
-    ->buildFromDao(bean('sebk_small_orm_dao')->get('TestBundle', 'Customer'))
-    ->setFieldMandatory('firstname')
-    ->setFieldMandatory('lastname')
-;
-```
-
-And then inject data for validation :
-```php
-// Fill form with body of request
-$form->fillFromArray($request->getParsedBody());
-
-// Get messages from validation
-$messages = $form->validate();
-if (count($messages) > 0) {
-    // Validation failed
-    return JsonResponse($messages)
-        ->withStatus(Status::BAD_REQUEST)
-    ;
+// Or test any modification on model since last backup
+if($user->modifiedSinceBackup()) {
+    echo "The user has been modified";
 }
 ```
 
-Note that validation don't only generate technial checks on data : it call the model validator and merge form messages with validator messages.
+Notes :
 
-You can also get a new model from form in order to persist your data :
+* The backup is serialised on json_encode
+* The metadata is also saved
+
+It is also possible to rebuild old model :
 ```php
-$model = $form->fillModel()->persist();
+// Set name of user
+$user->setName("Seb");
 
-// return updated model
-return JsonResponse($model);
-```
+// Backup model
+$user->backup();
 
-As we have created and persist new model, we can inject a model to update it :
-```php
-// Get model to update
-$model = bean('sebk_small_orm_dao')
-    ->get('TestBundle', 'Customer')
-    ->findOneBy($request->get('id'))
-;
+// Change name
+$user->setName("Opheli");
 
-// Get data from body
-$data = $request->getParsedBody();
+// Restore backup in $user2
+$user2 = $dao->makeModelFromStdClass($user->getBackup());
 
-// Create form and fill...
-$form = (new FormModel())
-    ->buildFromDao(bean('sebk_small_orm_dao')->get('TestBundle', 'Customer'))
-    ->setFieldMandatory('firstname')
-    ->setFieldMandatory('lastname')
-    // with model
-    ->fillFromModel($model)
-    // and overwrite with body data
-    ->fillFromArray($data)
-;
-
-// Get messages from validation
-$messages = $form->validate();
-if (count($messages) > 0) {
-    // Validation failed
-    return JsonResponse($messages)
-        ->withStatus(Status::BAD_REQUEST)
-    ;
-}
-
-// persist
-$model = $form->fillModel()->persist();
-
-// return updated model
-return JsonResponse($model);
-```
-
-The last example will work with any partial update. For example the request can contains only :
-```json
-{
-  "lastname":"skywalker"
-}
-```
-
-Then this code will only update the lastname.
-
-If your body is :
-```json
-{
-  "lastname":""
-}
-```
-
-The the code will respond a 400 http code with the body :
-```json
-[
-  "The field lastname is mandatory"
-]
+// The two models names are ...
+var_dump($user->getName()); // Output : Opheli
+var_dump($user2->getName()); // Output : Seb
 ```
