@@ -26,8 +26,6 @@ small-orm is implemented in two frameworks :
 * [Symfony](https://symfony.com)
 * [Swoft](http://swoft.io)
 
-It has been developed originally for Symfony but the recent efforts are on Swoft.
-
 ## Packages
 
 ### small-orm-core
