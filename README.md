@@ -4,6 +4,15 @@ small-orm-doc is the documentation for small-orm project
 
 You can read description of small-orm project bellow, or direct access [Documentation](Documentation/table-of-content.md)
 
+# Migrated
+
+This lib has been migrated to [framagit](https://framagit.org/small) project.
+
+Future commits will be done on framagit.
+
+This repository will be removed in few month.
+
+
 ## What is small-orm ?
 
 As small-orm is an ecosystem of packages serving a simple but efficient ORM for php developers.
